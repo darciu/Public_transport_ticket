@@ -50,7 +50,7 @@ class Menu:
                 if len(card_id) == 4:
                     return card_id
                 else:
-                    print("Card ID is exactly 4 digits!")
+                    print("Card ID has to be exactly 4 digits!")
             else:
                 print("Card ID has to be a number!")
 
@@ -66,17 +66,16 @@ class Menu:
         self.db.insert_user(name,surname,age,password)
 
     def login_account(self):
-        card_id = self.input_card_id()
-        if not self.db.check_card_id(card_id):
-            print("Could not find Card ID: {0}".format(card_id))
+        self.card_id = self.input_card_id()
+        if not self.db.check_card_id(self.card_id):
+            print("Could not find Card ID: {0}".format(self.card_id))
             return False
         password = input("Please provide password:\n")
-        if not self.db.check_password(card_id,password):
+        if not self.db.check_password(self.card_id,password):
             print("Password is incorrect!")
             return False
         return True
-    def list_of_accounts(self):
-        pass
+
 
     def account_menu(self):
         condition = True
@@ -85,37 +84,60 @@ class Menu:
         while condition:
 
             print("""Choose:
-                    1. I am a new user
-                    2. I already have an account
+                    1. I am a new user (CREATE ACCOUNT)
+                    2. I already have an account (LOG IN)
                     3. List of all users
-                    4. Exit""")
+                    4. Exit Application""")
             option = input("")
             if option == "1":
                 self.new_user()
 
-
             elif option == "2":
                 if self.login_account():
-                    print("All right!")
-
+                    print("You have successfull logged into your account!")
+                    self.login_menu()
 
             elif option == "3":
-                pass
-                condition = False
+                self.db.list_of_accounts()
 
             elif option == "4":
                 print("Bye!")
                 sys.exit()
-            else:
 
+            else:
                 print("Please provide a correct option")
 
-    def run(self):
-        pass
+    def login_menu(self):
+        """This menu appears when the user has successfully logged in"""
+        condition = True
+        while condition:
 
-    def display_options(self):
-        print("""Choose scenario:
-                1. """)
+            print("""Choose:
+              1. My personal data
+              2. Change personal data
+              3. Buy a ticket
+              4. Log out
+              5. Exit Application""")
+            option = input("")
+
+            if option == "1":
+                self.db.present_personal_data(self.card_id)
+            elif option == "2":
+                pass
+            elif option == "3":
+                pass
+            elif option == "4":
+                condition = False
+            elif option == "5":
+                print("Bye!")
+                sys.exit()
+            else:
+                print("Please provide a correct option")
+
+
+
+
+
 
 
 

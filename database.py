@@ -72,3 +72,32 @@ class Database:
             return True
         return False
 
+    def list_of_accounts(self):
+
+        cur = self.conn.cursor()
+
+        cur.execute("SELECT * FROM users ORDER BY id DESC LIMIT 5")
+
+        rows = cur.fetchall()
+
+        if len(rows) == 0:
+            print("There are no users!")
+        else:
+            print("Most recent accounts:")
+            for row in rows:
+
+                print(row[1], row[2][0] + ". ID: " + str(row[4]))
+
+    def present_personal_data(self, card_id):
+
+        cur = self.conn.cursor()
+        cur.execute("SELECT * FROM users WHERE card_id = ?",(card_id,))
+        row = cur.fetchone()
+        print("Name ", row[1])
+        print("Surname ", row[2])
+        print("Age ", row[3])
+        print("Card ID", row[4])
+        n = input("\n\n\nPress Enter to continue...")
+
+
+
