@@ -11,7 +11,7 @@ class Menu:
             if len(name) >2:
                 return name
             else:
-                print("Name has to be longer than two characters")
+                print("Name has to be at least two characters")
 
 
     def input_surname(self):
@@ -20,7 +20,7 @@ class Menu:
             if len(surname) >2:
                 return surname
             else:
-                print("Surname has to be longer than two characters")
+                print("Surname has to be at least two characters")
 
     def input_age(self):
         while True:
@@ -36,9 +36,9 @@ class Menu:
                 print("Age is not valid. Please provide a number between 12 and 120.")
 
     def input_password(self):
-        password = input("Please establish your password:\n")
+        password = input("Please establish new password:\n")
         while True:
-            password_check = input("Repeat your password:\n")
+            password_check = input("Repeat the password:\n")
             if password == password_check:
                 return password
             print("Wrong!")
@@ -86,7 +86,7 @@ class Menu:
             print("""Choose:
                     1. I am a new user (CREATE ACCOUNT)
                     2. I already have an account (LOG IN)
-                    3. List of all users
+                    3. List of recent users
                     4. Exit Application""")
             option = input("")
             if option == "1":
@@ -114,7 +114,7 @@ class Menu:
 
             print("""Choose:
               1. My personal data
-              2. Change personal data
+              2. Change password or personal data
               3. Buy a ticket
               4. Log out
               5. Exit Application""")
@@ -123,7 +123,7 @@ class Menu:
             if option == "1":
                 self.db.present_personal_data(self.card_id)
             elif option == "2":
-                pass
+                self.change_personal_data_menu()
             elif option == "3":
                 pass
             elif option == "4":
@@ -134,8 +134,42 @@ class Menu:
             else:
                 print("Please provide a correct option")
 
+    def change_personal_data_menu(self):
+        condition = True
+        while condition:
+            print("""Choose:
+            1. Change personal data
+            2. Change password
+            3. Back
+            """)
+            option = input("")
 
+            if option == "1":
+                self.change_name_and_surname()
+            elif option == "2":
+                self.change_password()
+            elif option == "3":
+                condition = False
+            else:
+                print("Please provide a correct option")
 
+    def change_name_and_surname(self):
+        """Change name and surname for logged user"""
+        print("Your current name is {0}".format(self.db.get_user_record(self.card_id,1)))
+        name = self.input_name()
+        print("Your current surname is {0}".format(self.db.get_user_record(self.card_id,2)))
+        surname = self.input_surname()
+        self.db.update_name_and_surname(name,surname,self.card_id)
+
+    def change_password(self):
+        """Change password for logged user"""
+        password = input("Please provide current password:\n")
+        if not self.db.check_password(self.card_id, password):
+            print("Password is incorrect!")
+            return
+
+        password = self.input_password()
+        self.db.update_password(password,self.card_id)
 
 
 

@@ -61,7 +61,7 @@ class Database:
             return False
         return True
     def check_password(self,card_id,password):
-        """Validate password to complete login"""
+        """Validate password"""
 
         cur = self.conn.cursor()
 
@@ -99,5 +99,32 @@ class Database:
         print("Card ID", row[4])
         n = input("\n\n\nPress Enter to continue...")
 
+    def get_user_record(self,card_id,column):
+        """Returns column value for given card ID"""
+
+        cur = self.conn.cursor()
+        cur.execute("SELECT * FROM users WHERE card_id = ?",(card_id,))
+        row = cur.fetchone()
+        return row[column]
 
 
+    def update_name_and_surname(self,name,surname, card_id):
+        try:
+            cur = self.conn.cursor()
+            sql = "UPDATE users SET name = ?, surname = ? WHERE card_id = ?"
+            cur.execute(sql,(name,surname,card_id))
+            self.conn.commit()
+            print("User name and surname has been successfully updated")
+        except:
+            print("An error occured. Database could not be updated!")
+
+
+    def update_password(self,password,card_id):
+        try:
+            cur = self.conn.cursor()
+            sql = "UPDATE users SET password = ? WHERE card_id = ?"
+            cur.execute(sql,(password,card_id))
+            self.conn.commit()
+            print("Password has been successfully updated")
+        except:
+            print("An error occured. Database could not be updated!")
