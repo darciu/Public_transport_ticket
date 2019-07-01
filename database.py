@@ -1,5 +1,6 @@
 import sqlite3
 from sqlite3 import Error
+import datetime
 
 
 
@@ -8,8 +9,8 @@ class Database:
     """All database connections and functionality"""
     def __init__(self, db_file):
         self.conn = self.create_connection(db_file)
-        self.sql_create_users = """ CREATE TABLE IF NOT EXISTS users(
-                                    id integer PRIMARY KEY,
+        sql_create_users = """ CREATE TABLE IF NOT EXISTS users(
+                                    users_id integer PRIMARY KEY,
                                     name text NOT NULL,
                                     surname text NOT NULL,
                                     age integer NOT NULL,
@@ -17,7 +18,19 @@ class Database:
                                     password text NOT NULL
 
                                 );"""
-        self.create_table(self.conn,self.sql_create_users)
+
+        sql_create_tickets = """CREATE TABLE IF NOT EXISTS tickets(
+                                tickets_id integer PRIMARY KEY,
+                                users_id integer NOT NULL,
+                                ticket_name text NOT NULL,
+                                ticket_start text NOT NULL,
+                                ticket_end text NOT NULL,
+                                    FOREIGN KEY (users_id) REFERENCES users (card_id)
+                                
+                                )"""
+        self.create_table(self.conn,sql_create_users)
+
+        self.create_table(self.conn , sql_create_tickets)
 
     def create_connection(self, db_file):
         """Returns connection object with database"""
@@ -76,12 +89,13 @@ class Database:
 
         cur = self.conn.cursor()
 
-        cur.execute("SELECT * FROM users ORDER BY id DESC LIMIT 5")
+        cur.execute("SELECT * FROM users ORDER BY users_id DESC LIMIT 5")
 
         rows = cur.fetchall()
 
         if len(rows) == 0:
-            print("There are no users!")
+            print("There are no users!\n\n\n\n")
+            n = input("Press Enter...")
         else:
             print("Most recent accounts:")
             for row in rows:
@@ -128,3 +142,20 @@ class Database:
             print("Password has been successfully updated")
         except:
             print("An error occured. Database could not be updated!")
+
+
+    def buy_ticket(self,card_id,ticket_name):
+
+
+        cur = self.conn.cursor()
+        sql = "INSERT INTO tickets(users_id, ticket_name, ticket_start, ticket_end) VALUES (?,?,?,?)"
+        ticket_stat = str(datetime.datetime.now())
+        ticket_data = (card_id,ticket_name,ticket_stat,ticket_stat)
+        cur.execute(sql,ticket_data)
+        self.conn.commit()
+
+
+
+
+
+# Na samym końcu należy określić jak będzie zachowywał się foreign key w przypadku usunięcia klienta + opcja usuwania klienta

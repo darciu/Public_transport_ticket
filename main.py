@@ -125,7 +125,7 @@ class Menu:
             elif option == "2":
                 self.change_personal_data_menu()
             elif option == "3":
-                pass
+                self.buy_ticket_menu()
             elif option == "4":
                 condition = False
             elif option == "5":
@@ -171,7 +171,54 @@ class Menu:
         password = self.input_password()
         self.db.update_password(password,self.card_id)
 
+    def buy_ticket_menu(self):
+        condition = True
+        while condition:
+            print("""Choose:
+                        1. 20 min ticket
+                        2. 1 hour ticket
+                        3. Daily Ticket
+                        4. Monthly Ticket
+                        5. Back
+                        """)
+            option = input("")
 
+            if option == "1":
+                self.buy_ticket_20_min()
+            elif option == "2":
+                pass
+            elif option == "3":
+                pass
+            elif option == "4":
+                pass
+            elif option == "5":
+                condition = False
+            else:
+                print("Please provide a correct option")
+
+    def buy_ticket_20_min(self):
+        print("This ticket costs 2 units")
+        answer = input("Put (Y) if you want to buy: ")
+        if answer == "Y":
+            self.db.buy_ticket(self.card_id,"20 min")
+
+    def buy_ticket_hour(self):
+        print("This ticket costs 4 units")
+        answer = input("Put (Y) if you want to buy: ")
+        if answer == "Y":
+            self.db.buy_ticket(self.card_id,"1 hour")
+
+    def buy_ticket_daily(self):
+        print("This ticket costs 10 units")
+        answer = input("Put (Y) if you want to buy: ")
+        if answer == "Y":
+            self.db.buy_ticket(self.card_id,"daily")
+
+    def buy_ticket_monthly(self):
+        print("This ticket costs 150 units")
+        answer = input("Put (Y) if you want to buy: ")
+        if answer == "Y":
+            self.db.buy_ticket(self.card_id,"monthly")
 
 
 
@@ -180,3 +227,4 @@ if __name__ == '__main__':
 
 
 
+#przy zalogowaniu powiatanie + imię + ilość aktywnych biletów
