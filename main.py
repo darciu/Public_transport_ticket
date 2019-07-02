@@ -94,7 +94,6 @@ class Menu:
 
             elif option == "2":
                 if self.login_account():
-                    print("You have successfull logged into your account!")
                     self.login_menu()
 
             elif option == "3":
@@ -109,6 +108,10 @@ class Menu:
 
     def login_menu(self):
         """This menu appears when the user has successfully logged in"""
+        print("You have successfull logged into your account! Welcome {0}".format(self.db.return_user_name(self.card_id)))
+
+
+
         condition = True
         while condition:
 
@@ -133,6 +136,8 @@ class Menu:
                 sys.exit()
             else:
                 print("Please provide a correct option")
+
+
 
     def change_personal_data_menu(self):
         condition = True
@@ -178,7 +183,7 @@ class Menu:
                         1. 20 min ticket
                         2. 1 hour ticket
                         3. Daily Ticket
-                        4. Monthly Ticket
+                        4. Monthly Ticket (30 days)
                         5. Back
                         """)
             option = input("")
@@ -186,11 +191,11 @@ class Menu:
             if option == "1":
                 self.buy_ticket_20_min()
             elif option == "2":
-                pass
+                self.buy_ticket_hour()
             elif option == "3":
-                pass
+                self.buy_ticket_daily()
             elif option == "4":
-                pass
+                self.buy_ticket_monthly()
             elif option == "5":
                 condition = False
             else:
@@ -201,26 +206,33 @@ class Menu:
         answer = input("Put (Y) if you want to buy: ")
         if answer == "Y":
             self.db.buy_ticket(self.card_id,"20 min")
+            self.ticket_has_been_bought("20 minute")
 
     def buy_ticket_hour(self):
         print("This ticket costs 4 units")
         answer = input("Put (Y) if you want to buy: ")
         if answer == "Y":
             self.db.buy_ticket(self.card_id,"1 hour")
+            self.ticket_has_been_bought("1 hour")
 
     def buy_ticket_daily(self):
         print("This ticket costs 10 units")
         answer = input("Put (Y) if you want to buy: ")
         if answer == "Y":
             self.db.buy_ticket(self.card_id,"daily")
+            self.ticket_has_been_bought("Daily")
 
     def buy_ticket_monthly(self):
         print("This ticket costs 150 units")
         answer = input("Put (Y) if you want to buy: ")
         if answer == "Y":
             self.db.buy_ticket(self.card_id,"monthly")
+            self.ticket_has_been_bought("Monthly")
 
 
+    def ticket_has_been_bought(self, ticket_name):
+        print("{0} ticket has been bought.\n\n\n".format(ticket_name))
+        n = input("Press Enter to continue...")
 
 if __name__ == '__main__':
     Menu().account_menu()
@@ -228,3 +240,4 @@ if __name__ == '__main__':
 
 
 #przy zalogowaniu powiatanie + imię + ilość aktywnych biletów
+#wyjście z podawania card id

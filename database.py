@@ -1,6 +1,6 @@
 import sqlite3
 from sqlite3 import Error
-import datetime
+from datetime import datetime, timedelta
 
 
 
@@ -149,11 +149,42 @@ class Database:
 
         cur = self.conn.cursor()
         sql = "INSERT INTO tickets(users_id, ticket_name, ticket_start, ticket_end) VALUES (?,?,?,?)"
-        ticket_stat = str(datetime.datetime.now())
-        ticket_data = (card_id,ticket_name,ticket_stat,ticket_stat)
+        ticket_stat = str(datetime.now())
+        ticket_end = self.ticket_end_date(ticket_name)
+        ticket_data = (card_id,ticket_name,ticket_stat,ticket_end)
         cur.execute(sql,ticket_data)
         self.conn.commit()
 
+
+    def ticket_end_date(self, ticket_name):
+        """Returns ticket expiration time according to ticket type"""
+        if ticket_name == "20 min":
+            ticket_end = datetime.now() + timedelta(minutes=20)
+            return ticket_end
+        elif ticket_name == "1 hour":
+            ticket_end = datetime.now() + timedelta(hours=1)
+            return ticket_end
+        elif ticket_name == "daily":
+            ticket_end = datetime.now() + timedelta(days=1)
+            return ticket_end
+        elif ticket_name == "monthly":
+            ticket_end = datetime.now() + timedelta(days=30)
+            return ticket_end
+
+    def return_user_name(self,card_id):
+
+        cur = self.conn.cursor()
+        cur.execute("SELECT * FROM users WHERE card_id = ?", (card_id,))
+        row = cur.fetchone()
+        return row[1]
+
+    def return_active_ticket(self,card_id,ticket_name):
+        """Returns end date if particular ticket is active"""
+
+        cur = self.conn.cursor()
+        cur.execute("SELECT * FROM tickets WHERE user_id = ?, ticket_name = ?" (card_id,ticket_name))
+        row = cur.fetchone()
+        return row[4]
 
 
 
