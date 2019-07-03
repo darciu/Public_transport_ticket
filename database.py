@@ -164,10 +164,10 @@ class Database:
         elif ticket_name == "1 hour":
             ticket_end = datetime.now() + timedelta(hours=1)
             return ticket_end
-        elif ticket_name == "daily":
+        elif ticket_name == "Daily":
             ticket_end = datetime.now() + timedelta(days=1)
             return ticket_end
-        elif ticket_name == "monthly":
+        elif ticket_name == "Monthly":
             ticket_end = datetime.now() + timedelta(days=30)
             return ticket_end
 
@@ -180,11 +180,13 @@ class Database:
 
     def return_active_ticket(self,card_id,ticket_name):
         """Returns end date if particular ticket is active"""
-
+        n = datetime.now()
         cur = self.conn.cursor()
-        cur.execute("SELECT * FROM tickets WHERE user_id = ?, ticket_name = ?" (card_id,ticket_name))
-        row = cur.fetchone()
-        return row[4]
+        cur.execute("SELECT * FROM tickets WHERE users_id = ? AND ticket_name = ? AND ticket_end > ?",(card_id,ticket_name,str(n)))
+        row = cur.fetchall()
+        if len(row) > 0:
+            return True
+        return False
 
 
 

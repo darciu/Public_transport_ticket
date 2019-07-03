@@ -9,6 +9,8 @@ class Menu:
         while True:
             name = input("Please provide your name:\n")
             if len(name) >2:
+                name = name[0].upper() + name[1:]
+                name = name.strip()
                 return name
             else:
                 print("Name has to be at least two characters")
@@ -18,6 +20,8 @@ class Menu:
         while True:
             surname = input("Please provide your surname:\n")
             if len(surname) >2:
+                surname = surname[0].upper() + surname[1:]
+                surname = surname.strip()
                 return surname
             else:
                 print("Surname has to be at least two characters")
@@ -45,12 +49,14 @@ class Menu:
 
     def input_card_id(self):
         while True:
-            card_id = input("Please provide your own Card ID:\n")
+            card_id = input("Please provide your own Card ID ((Q) to Quit):\n")
             if card_id.isnumeric():
                 if len(card_id) == 4:
                     return card_id
                 else:
                     print("Card ID has to be exactly 4 digits!")
+            elif card_id.upper() == "Q":
+                return None
             else:
                 print("Card ID has to be a number!")
 
@@ -66,7 +72,10 @@ class Menu:
         self.db.insert_user(name,surname,age,password)
 
     def login_account(self):
+
         self.card_id = self.input_card_id()
+        if self.card_id == None:
+            return False
         if not self.db.check_card_id(self.card_id):
             print("Could not find Card ID: {0}".format(self.card_id))
             return False
@@ -86,7 +95,7 @@ class Menu:
             print("""Choose:
                     1. I am a new user (CREATE ACCOUNT)
                     2. I already have an account (LOG IN)
-                    3. List of recent users
+                    3. List of recent accounts
                     4. Exit Application""")
             option = input("")
             if option == "1":
@@ -110,6 +119,8 @@ class Menu:
         """This menu appears when the user has successfully logged in"""
         print("You have successfull logged into your account! Welcome {0}".format(self.db.return_user_name(self.card_id)))
 
+        self.display_active_tickets()
+
 
 
         condition = True
@@ -117,26 +128,40 @@ class Menu:
 
             print("""Choose:
               1. My personal data
-              2. Change password or personal data
-              3. Buy a ticket
-              4. Log out
-              5. Exit Application""")
+              2. My active tickets
+              3. Change password or personal data
+              4. Buy a ticket
+              5. Log out
+              6. Exit Application""")
             option = input("")
 
             if option == "1":
                 self.db.present_personal_data(self.card_id)
             elif option == "2":
-                self.change_personal_data_menu()
+                self.display_active_tickets()
+                print("\n\n")
+                n = input("Press Enter...")
             elif option == "3":
-                self.buy_ticket_menu()
+                self.change_personal_data_menu()
             elif option == "4":
-                condition = False
+                self.buy_ticket_menu()
             elif option == "5":
+                condition = False
+            elif option == "6":
                 print("Bye!")
                 sys.exit()
             else:
                 print("Please provide a correct option")
 
+    def display_active_tickets(self):
+        print("Active tickets:")
+        condition = True
+        for ticket_name in ['20 min','1 hour','Daily','Monthly']:
+            if self.db.return_active_ticket(self.card_id,ticket_name):
+                condition = False
+                print("{0} is ticket active.".format(ticket_name))
+        if condition:
+            print("There are no active tickets\n")
 
 
     def change_personal_data_menu(self):
@@ -189,45 +214,29 @@ class Menu:
             option = input("")
 
             if option == "1":
-                self.buy_ticket_20_min()
+                self.buy_ticket("20 min")
             elif option == "2":
-                self.buy_ticket_hour()
+                self.buy_ticket("1 hour")
             elif option == "3":
-                self.buy_ticket_daily()
+                self.buy_ticket("Daily")
             elif option == "4":
-                self.buy_ticket_monthly()
+                self.buy_ticket("Monthly")
             elif option == "5":
                 condition = False
             else:
                 print("Please provide a correct option")
 
-    def buy_ticket_20_min(self):
-        print("This ticket costs 2 units")
-        answer = input("Put (Y) if you want to buy: ")
-        if answer == "Y":
-            self.db.buy_ticket(self.card_id,"20 min")
-            self.ticket_has_been_bought("20 minute")
+    def buy_ticket(self,ticket_name):
+        if not self.db.return_active_ticket(self.card_id,ticket_name):
+            ticket_prices = {'20 min':"2",'1 hour':'4','Daily':'10','Monthly':'150'}
+            print("This ticket costs {0} units".format(ticket_prices[ticket_name]))
+            answer = input("Put (Y) if you want to buy: ")
 
-    def buy_ticket_hour(self):
-        print("This ticket costs 4 units")
-        answer = input("Put (Y) if you want to buy: ")
-        if answer == "Y":
-            self.db.buy_ticket(self.card_id,"1 hour")
-            self.ticket_has_been_bought("1 hour")
-
-    def buy_ticket_daily(self):
-        print("This ticket costs 10 units")
-        answer = input("Put (Y) if you want to buy: ")
-        if answer == "Y":
-            self.db.buy_ticket(self.card_id,"daily")
-            self.ticket_has_been_bought("Daily")
-
-    def buy_ticket_monthly(self):
-        print("This ticket costs 150 units")
-        answer = input("Put (Y) if you want to buy: ")
-        if answer == "Y":
-            self.db.buy_ticket(self.card_id,"monthly")
-            self.ticket_has_been_bought("Monthly")
+            if answer.upper() == "Y":
+                self.db.buy_ticket(self.card_id,ticket_name)
+                self.ticket_has_been_bought(ticket_name)
+        else:
+            print("This kind of ticket is already active. You cannot buy it unless it expires.\n")
 
 
     def ticket_has_been_bought(self, ticket_name):
@@ -239,5 +248,4 @@ if __name__ == '__main__':
 
 
 
-#przy zalogowaniu powiatanie + imię + ilość aktywnych biletów
-#wyjście z podawania card id
+#trimować imię oraz nazwisko
