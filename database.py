@@ -9,6 +9,7 @@ class Database:
     """All database connections and functionality"""
     def __init__(self, db_file):
         self.conn = self.create_connection(db_file)
+        self.conn.execute('PRAGMA foreign_keys = ON')
         sql_create_users = """ CREATE TABLE IF NOT EXISTS users(
                                     users_id integer PRIMARY KEY,
                                     name text NOT NULL,
@@ -25,10 +26,11 @@ class Database:
                                 ticket_name text NOT NULL,
                                 ticket_start text NOT NULL,
                                 ticket_end text NOT NULL,
-                                    FOREIGN KEY (users_id) REFERENCES users (card_id)
-                                
+                                FOREIGN KEY (users_id) REFERENCES users(users_id) ON DELETE CASCADE
                                 )"""
-        self.create_table(self.conn,sql_create_users)
+
+#FOREIGN KEY users_id REFERENCES users(card_id) ON DELETE CASCADE
+        self.create_table(self.conn, sql_create_users)
 
         self.create_table(self.conn , sql_create_tickets)
 
@@ -101,6 +103,7 @@ class Database:
             for row in rows:
 
                 print(row[1], row[2][0] + ". ID: " + str(row[4]))
+            print("\n")
 
     def present_personal_data(self, card_id):
 
@@ -146,7 +149,7 @@ class Database:
 
     def buy_ticket(self,card_id,ticket_name):
 
-
+        card_id = str(int(card_id) - 1500)
         cur = self.conn.cursor()
         sql = "INSERT INTO tickets(users_id, ticket_name, ticket_start, ticket_end) VALUES (?,?,?,?)"
         ticket_stat = str(datetime.now())
@@ -180,6 +183,7 @@ class Database:
 
     def return_active_ticket(self,card_id,ticket_name):
         """Returns end date if particular ticket is active"""
+        card_id = str(int(card_id) - 1500)
         n = datetime.now()
         cur = self.conn.cursor()
         cur.execute("SELECT * FROM tickets WHERE users_id = ? AND ticket_name = ? AND ticket_end > ?",(card_id,ticket_name,str(n)))
@@ -188,7 +192,10 @@ class Database:
             return True
         return False
 
+    def delete_account_from_db(self,card_id):
+
+        cur = self.conn.cursor()
+        cur.execute("DELETE FROM users WHERE card_id = ?",(card_id,))
+        self.conn.commit()
 
 
-
-# Na samym końcu należy określić jak będzie zachowywał się foreign key w przypadku usunięcia klienta + opcja usuwania klienta

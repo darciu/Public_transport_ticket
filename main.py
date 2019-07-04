@@ -117,7 +117,7 @@ class Menu:
 
     def login_menu(self):
         """This menu appears when the user has successfully logged in"""
-        print("You have successfull logged into your account! Welcome {0}".format(self.db.return_user_name(self.card_id)))
+        print("\nWelcome {0}! You have successfull logged into your account".format(self.db.return_user_name(self.card_id)))
 
         self.display_active_tickets()
 
@@ -131,8 +131,9 @@ class Menu:
               2. My active tickets
               3. Change password or personal data
               4. Buy a ticket
-              5. Log out
-              6. Exit Application""")
+              5. Delete account
+              6. Log out
+              7. Exit Application""")
             option = input("")
 
             if option == "1":
@@ -146,13 +147,38 @@ class Menu:
             elif option == "4":
                 self.buy_ticket_menu()
             elif option == "5":
-                condition = False
+                if self.delete_account():
+                    condition = False
             elif option == "6":
+                condition = False
+            elif option == "7":
                 print("Bye!")
                 sys.exit()
             else:
                 print("Please provide a correct option")
 
+    def delete_account(self):
+        """Pernamently deletes user account with ticket references from database"""
+
+        print("In order to delete your account, please provide Card ID and Password:\n")
+        card_id = input("Card ID: ")
+        if card_id == self.card_id:
+            password = input("Password: ")
+            if not self.db.check_password(self.card_id, password):
+                print("Password is incorrect!")
+                return False
+
+            else:
+                option = input("If you are sure to delete this account, put (Y): ")
+                if option.upper() == "Y":
+                    self.db.delete_account_from_db(self.card_id)
+                    print("\nAccount has been deleted!")
+                    return True
+                else:
+                    return False
+        else:
+            print("Card ID is incorrect!")
+            return False
     def display_active_tickets(self):
         print("Active tickets:")
         condition = True
@@ -235,6 +261,7 @@ class Menu:
             if answer.upper() == "Y":
                 self.db.buy_ticket(self.card_id,ticket_name)
                 self.ticket_has_been_bought(ticket_name)
+
         else:
             print("This kind of ticket is already active. You cannot buy it unless it expires.\n")
 
@@ -246,6 +273,3 @@ class Menu:
 if __name__ == '__main__':
     Menu().account_menu()
 
-
-
-#trimować imię oraz nazwisko
